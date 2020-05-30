@@ -1,0 +1,3 @@
+[submodule "leaflet-gpx"]
+	path = leaflet-gpx
+	url = https://github.com/ddiss/leaflet-gpx

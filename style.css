@@ -1,0 +1,70 @@
+html {
+	font-family: Verdana, Geneva, sans-serif;
+	background-color: #808080;
+}
+
+h1 {
+	font-size: 60px;
+}
+
+h2 {
+	font-size: 40px;
+}
+
+p, li {
+	font-size: 18px;
+	line-height: 1;
+	letter-spacing: 1px;
+}
+
+body {
+	margin: 0 auto;
+	color: #000000;
+	background-color: #FFFFFF;
+	padding: 0 20px 20px 20px;
+	border: 5px solid black;
+}
+
+button {
+	margin: 10px;
+	border: 0;
+	line-height: 2.5;
+	padding: 0 20px;
+	font-size: 20px;
+	text-align: center;
+	color: #fff;
+	text-shadow: 1px 1px 1px #000;
+	border-radius: 10px;
+	background-color: #dc3545;
+	background-image: linear-gradient(to top left,
+					  rgba(0, 0, 0, .2),
+					  rgba(0, 0, 0, .2) 30%,
+					  rgba(0, 0, 0, 0));
+	box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6),
+		    inset -2px -2px 3px rgba(0, 0, 0, .6);
+	opacity: 0.85;
+}
+
+.btn_export {
+	background-color: #00cc00;
+	visibility: hidden;
+}
+
+.btn_map {
+	background-color: #0099ff;
+	margin: 0;
+	font-size: 10px;
+}
+
+button:hover {
+	opacity: 1;
+}
+
+button:active {
+	box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6),
+		    inset 2px 2px 3px rgba(0, 0, 0, .6);
+}
+
+#map {
+	height: 700px;
+}
