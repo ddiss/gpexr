@@ -92,10 +92,6 @@ function gpx_blob_gen() {
 function trk_seg() {
 	this.seg = null;
 	this.gpx_stash = function (pos) {
-		if (gpx_doc == null) {
-			gpx_doc_init();
-		}
-
 		if (this.seg == null) {
 			// create a new track for each segment for now
 			var gpx_el = gpx_doc.getElementsByTagName("gpx")[0];
@@ -190,3 +186,4 @@ document.querySelector('#btn_track').addEventListener('click', track_clicked);
 // btn_export is only visible after gpx_doc has been initialized
 document.querySelector('#btn_export').addEventListener('click', export_clicked);
 map_init();
+gpx_doc_init();
