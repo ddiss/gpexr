@@ -6,8 +6,10 @@
 var watch_id = null;
 // parent GPX document root
 var gpx_doc = null;
-// current GPX track segment (trkseg) element
-var cur_seg = null;
+// current GPX track segment (trkseg) element for manually added points
+var cur_point_seg = new trk_seg();
+// current GPX track segment (trkseg) element for location readings
+var cur_loc_seg = new trk_seg();
 // leaflet map
 var map = null;
 // leaflet popup also carries the position of the last popup for stashing
@@ -18,7 +20,7 @@ const tstatus = document.querySelector('#track_status');
 
 function point_add_click(e) {
 	map.closePopup();
-	gpx_stash(popup.gpexr_pos);
+	cur_point_seg.gpx_stash(popup.gpexr_pos);
 }
 
 function map_ctxmenu(e) {
@@ -63,11 +65,6 @@ function gpx_doc_init() {
 	var gpx_el = gpx_doc.getElementsByTagName("gpx")[0];
 	gpx_el.setAttribute("version", "1.1");
 	gpx_el.setAttribute("creator", "gpexr-0.1");
-	var trk_el = gpx_doc.createElement("trk");
-	gpx_el.appendChild(trk_el);
-
-	cur_seg = gpx_doc.createElement("trkseg");
-	trk_el.appendChild(cur_seg);
 
 	// gpx_doc is now valid XML, so allow exporting and mapping
 	var btn = document.getElementById("btn_export");
@@ -91,24 +88,37 @@ function gpx_blob_gen() {
 	//return window.URL.createObjectURL(blob);
 }
 
-function gpx_stash(pos) {
-	if (gpx_doc == null) {
-		gpx_doc_init();
-	}
+// called via manual position or geolocation track segments
+function trk_seg() {
+	this.seg = null;
+	this.gpx_stash = function (pos) {
+		if (gpx_doc == null) {
+			gpx_doc_init();
+		}
 
-	var pt_el = gpx_doc.createElement("trkpt");
-	pt_el.setAttribute("lat", pos.coords.latitude);
-	pt_el.setAttribute("lon", pos.coords.longitude);
+		if (this.seg == null) {
+			// create a new track for each segment for now
+			var gpx_el = gpx_doc.getElementsByTagName("gpx")[0];
+			var trk_el = gpx_doc.createElement("trk");
+			gpx_el.appendChild(trk_el);
+			this.seg = gpx_doc.createElement("trkseg");
+			trk_el.appendChild(this.seg);
+		}
 
-	var time_el = gpx_doc.createElement("time");
-	time_el.appendChild(gpx_doc.createTextNode(pos.timestamp));
-	pt_el.appendChild(time_el);
-	cur_seg.appendChild(pt_el);
+		var pt_el = gpx_doc.createElement("trkpt");
+		pt_el.setAttribute("lat", pos.coords.latitude);
+		pt_el.setAttribute("lon", pos.coords.longitude);
 
-	if (gpx_obj == null) {
-		gpx_obj = new L.GPX(gpx_doc, {async: true}).addTo(map);
-	} else {
-		gpx_obj.reload();
+		var time_el = gpx_doc.createElement("time");
+		time_el.appendChild(gpx_doc.createTextNode(pos.timestamp));
+		pt_el.appendChild(time_el);
+		this.seg.appendChild(pt_el);
+
+		if (gpx_obj == null) {
+			gpx_obj = new L.GPX(gpx_doc, {async: true}).addTo(map);
+		} else {
+			gpx_obj.reload();
+		}
 	}
 }
 
@@ -139,20 +149,22 @@ function export_clicked(event) {
 
 function track_clicked() {
 	function watch_success(pos) {
-		gpx_stash(pos);
+		gpx_stash(cur_loc_seg, pos);
 		tstatus.textContent += '.';
 	}
 
 	function loc_error(error) {
 		tstatus.textContent = 'Failed to obtain location: ' + error.code;
 		if (watch_id != null) {
+			// TODO keep watch around, but create a new segment when
+			// a subsequent successful location is obtained.
 			navigator.geolocation.clearWatch(watch_id);
 		}
 		watch_id = null;
 	}
 
 	function loc_success(pos) {
-		gpx_stash(pos);
+		gpx_stash(cur_loc_seg, pos);
 
 		const watch_opts = {
 			  enableHighAccuracy: true,
