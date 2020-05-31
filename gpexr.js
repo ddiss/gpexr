@@ -90,15 +90,19 @@ function gpx_blob_gen() {
 
 // called via manual position or geolocation track segments
 function trk_seg() {
+	this.trk = null;
 	this.seg = null;
+
 	this.gpx_stash = function (pos) {
-		if (this.seg == null) {
-			// create a new track for each segment for now
+		// create a new track for each segment for now
+		if (this.trk == null) {
 			var gpx_el = gpx_doc.getElementsByTagName("gpx")[0];
-			var trk_el = gpx_doc.createElement("trk");
-			gpx_el.appendChild(trk_el);
+			this.trk = gpx_doc.createElement("trk");
+			gpx_el.appendChild(this.trk);
+		}
+		if (this.seg == null) {
 			this.seg = gpx_doc.createElement("trkseg");
-			trk_el.appendChild(this.seg);
+			this.trk.appendChild(this.seg);
 		}
 
 		var pt_el = gpx_doc.createElement("trkpt");
