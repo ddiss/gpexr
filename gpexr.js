@@ -145,7 +145,7 @@ function export_clicked(event) {
 
 function track_clicked() {
 	function watch_success(pos) {
-		gpx_stash(cur_loc_seg, pos);
+		cur_loc_seg.gpx_stash(pos);
 		tstatus.textContent += '.';
 	}
 
@@ -160,7 +160,7 @@ function track_clicked() {
 	}
 
 	function loc_success(pos) {
-		gpx_stash(cur_loc_seg, pos);
+		cur_loc_seg.gpx_stash(pos);
 
 		const watch_opts = {
 			  enableHighAccuracy: true,
