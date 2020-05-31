@@ -120,6 +120,11 @@ function trk_seg() {
 			gpx_obj.reload();
 		}
 	}
+
+	this.seg_next = function () {
+		// ensure new segment creation on the next gpx_stash() call
+		this.seg = null;
+	}
 }
 
 function export_clicked(event) {
@@ -156,11 +161,11 @@ function track_clicked() {
 	function loc_error(error) {
 		tstatus.textContent = 'Failed to obtain location: ' + error.code;
 		if (watch_id != null) {
-			// TODO keep watch around, but create a new segment when
-			// a subsequent successful location is obtained.
-			navigator.geolocation.clearWatch(watch_id);
+			// https://www.topografix.com/GPX/1/1/#type_trksegType
+			// start a new Track Segment for each continuous span of
+			// track data.
+			cur_loc_seg.seg_next();
 		}
-		watch_id = null;
 	}
 
 	function loc_success(pos) {
